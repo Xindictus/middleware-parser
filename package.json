@@ -1,0 +1,61 @@
+{
+  "name": "meb-parser",
+  "description": "testing desc",
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": {
+    "name": "Konstantinos Vytiniotis",
+    "email": "konstantinos.vytiniotis@outlook.com",
+    "url": "https://your-website.com"
+  },
+  "main": "src/main/index.js",
+  "scripts": {
+    "dev": "electron-webpack dev",
+    "compile": "electron-webpack",
+    "dist": "yarn compile && electron-builder",
+    "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "bootstrap": "^4.4.1",
+    "jquery": "^3.4.1",
+    "popper.js": "^1.16.0",
+    "source-map-support": "^0.5.12"
+  },
+  "nodeGypRebuild": true,
+  "devDependencies": {
+    "electron": "^7.1.2",
+    "electron-build": "0.0.3",
+    "electron-builder": "^21.2.0",
+    "electron-rebuild": "^1.8.8",
+    "electron-webpack": "^2.7.4",
+    "webpack": "~4.35.3"
+  },
+  "electronWebpack": {
+    "commonSourceDirectory": "src/common",
+    "staticSourceDirectory": "src/static",
+    "title": true,
+    "main": {
+      "extraEntries": [],
+      "sourceDirectory": "src/main"
+    }
+  },
+  "build": {
+    "appId": "com.my-website.my-app",
+    "productName": "MEBParser",
+    "target": "NSIS",
+    "copyright": "Copyright © 2019 ${author}",
+    "mac": {
+      "category": "public.app-category.utilities"
+    },
+    "files": [
+      "./package.json",
+      "./yarn.lock",
+      "./src/**/*",
+      "./build/**/*",
+      "./node_modules/**/*",
+      "./assets/bootstrap.min.css",
+      "./static/**/*"
+    ]
+  }
+}

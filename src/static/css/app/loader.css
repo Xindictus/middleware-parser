@@ -1,0 +1,26 @@
+#loader {
+    background-size: 50px 50px;
+    height: 100%
+}
+
+.overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 9999
+}
+
+.blur-filter {
+    -webkit-filter: opacity(0.5);
+    -moz-filter: opacity(0.5);
+    -o-filter: opacity(0.5);
+    -ms-filter: "alpha(opacity=50)";
+    filter: opacity(0.5);
+    -webkit-transition: 300ms -webkit-filter linear;
+    -moz-transition: 300ms -moz-filter linear;
+    -o-transition: 300ms -o-filter linear;
+    transition: 300ms -webkit-filter linear
+}
