@@ -7,6 +7,27 @@
     <Filter Include="..\addons">
       <UniqueIdentifier>{CD460BF1-E3DE-B3D0-01CC-127DD8693DD7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="..\addons\common_headers">
+      <UniqueIdentifier>{81649A2A-4AC3-B044-FE12-3187BA80B527}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\addons">
+      <UniqueIdentifier>{CD460BF1-E3DE-B3D0-01CC-127DD8693DD7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\addons\parser">
+      <UniqueIdentifier>{9215FA42-5BA2-ECEB-BA53-D339C91D39B0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\addons\parser\meb">
+      <UniqueIdentifier>{C0073994-1F65-3109-EA0A-17210F9FC79F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\addons">
+      <UniqueIdentifier>{CD460BF1-E3DE-B3D0-01CC-127DD8693DD7}</UniqueIdentifier>
+    </Filter>
     <Filter Include="..\addons\parser">
       <UniqueIdentifier>{9215FA42-5BA2-ECEB-BA53-D339C91D39B0}</UniqueIdentifier>
     </Filter>
@@ -57,10 +78,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\addons\parser\meb\ParserModule.cpp">
-      <Filter>..\addons\parser\meb</Filter>
+    <ClCompile Include="..\addons\common_headers\FlowCreator.cpp">
+      <Filter>..\addons\common_headers</Filter>
     </ClCompile>
     <ClCompile Include="..\addons\parser\meb\BSTNode.cpp">
+      <Filter>..\addons\parser\meb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\addons\parser\meb\RepetitionNinja.cpp">
+      <Filter>..\addons\parser\meb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\addons\parser\meb\ParserModule.cpp">
       <Filter>..\addons\parser\meb</Filter>
     </ClCompile>
     <ClCompile Include="C:\Users\konst\AppData\Roaming\npm\node_modules\node-gyp\src\win_delay_load_hook.cc">

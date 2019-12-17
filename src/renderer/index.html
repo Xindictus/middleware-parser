@@ -15,7 +15,7 @@
     <!--        <link rel="stylesheet" href="/src/static/css/bootstrap/4.4.1/bootstrap.min.css">-->
     <!--    <link rel="stylesheet" href="../../../assets/bootstrap.min.css">-->
     <link rel="stylesheet" href="../static/css/bootstrap/4.4.1/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="../static/css/jquery/jquery.dataTables.min.css">
     <!-- LOADER CSS -->
     <link rel="stylesheet" href="../static/css/app/loader.css">
     <link rel="stylesheet" href="../static/css/app/index.css">
@@ -27,56 +27,95 @@
 </div>
 
 <div class="container">
+    <br>
+
     <div class="row justify-content-md-center">
         <div class="col-12">
             <div id="file_alert" class="alert alert-danger text-center" role="alert">
                 <h5>
                     Please select trace for analysis!
                 </h5>
-                <!--                <button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
-                <!--                    <span aria-hidden="true">&times;</span>-->
-                <!--                </button>-->
             </div>
         </div>
     </div>
 
+    <input id="log_path" class="btn btn-outline-info" type="file">
 
-    <input id="log_path" type="file">
-
-    <button id="testbtn" class="btn btn-primary" type="button">
-        test html
+    <button id="btn_parse" class="btn btn-primary disable-cursor disabled" type="button" disabled>
+        Parse Traces
     </button>
 
-    <button id="testpath" class="btn btn-info" type="button">
-        Test path
+    <button id="trace_analysis" class="btn btn-outline-success" type="button">
+        Trace Analysis
     </button>
 
-    <button id="trace_analysis" class="btn btn-danger" type="button">
-        Analyze
-    </button>
+    <div class="clearfix"><br></div>
 
-    <hr>
+    <div class="border border-dark" style="padding: 2.5em;">
+        <div class="text-center">
+            <h3>
+                Incoming Calls
+            </h3>
 
-    <div class="row justify-content-md-center">
-        <div class="col-12">
-            <table id="example" class="display" style="width:100%">
-                <thead>
-                <tr>
-                    <th>Timestamp</th>
-                    <th>Call-ID</th>
-                    <th>#Line</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tfoot>
-                <tr>
-                    <th>Timestamp</th>
-                    <th>Call-ID</th>
-                    <th>#Line</th>
-                    <th>Actions</th>
-                </tr>
-                </tfoot>
-            </table>
+            <hr class="custom-hr">
+        </div>
+
+        <div class="row justify-content-md-center">
+            <div class="col-12">
+                <table id="incoming_table" class="display" style="width:100%">
+                    <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Call-ID</th>
+                        <th>#Line</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Call-ID</th>
+                        <th>#Line</th>
+                        <th>Actions</th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="clearfix"><br></div>
+
+    <div class="border border-primary" style="padding: 2.5em;">
+        <div class="text-center">
+            <h3>
+                Outgoing Calls
+            </h3>
+
+            <hr class="custom-hr">
+        </div>
+
+        <div class="row justify-content-md-center">
+            <div class="col-12">
+                <table id="outgoing_table" class="display" style="width:100%">
+                    <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Call-ID</th>
+                        <th>#Line</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Call-ID</th>
+                        <th>#Line</th>
+                        <th>Actions</th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -86,24 +125,39 @@
     Launch demo modal
 </button>
 
-
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <h5 class="modal-title" id="exampleModalLabel">
+                    Modal title
+                </h5>
+
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+
             <div class="modal-body">
-                ...
+                <input id="modal_call_id" type="hidden">
+                <input id="modal_cursor_pos" type="hidden">
+
+                <div id="modal_output_div" class="input-group mb-3 enable-cursor">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="modal_save_input">Where to save:</span>
+                    </div>
+                    <input id="modal_output_path" class="form-control enable-cursor" aria-describedby="modal_save_input"
+                           type="text" disabled>
+                </div>
             </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <button id="modal_btn_export" class="btn btn-primary disabled disable-cursor" type="button" disabled>
+                    Export File
+                </button>
             </div>
         </div>
     </div>

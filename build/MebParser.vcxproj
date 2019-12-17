@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{CF70ED53-596C-F34D-E48E-F2A2530A2E7B}</ProjectGuid>
+    <ProjectGuid>{5EFCF391-35E4-CEB5-66E4-2413CF993C99}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>MebParser</RootNamespace>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
@@ -124,8 +124,10 @@
     <None Include="..\binding.gyp"/>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\addons\parser\meb\ParserModule.cpp"/>
+    <ClCompile Include="..\addons\common_headers\FlowCreator.cpp"/>
     <ClCompile Include="..\addons\parser\meb\BSTNode.cpp"/>
+    <ClCompile Include="..\addons\parser\meb\RepetitionNinja.cpp"/>
+    <ClCompile Include="..\addons\parser\meb\ParserModule.cpp"/>
     <ClCompile Include="C:\Users\konst\AppData\Roaming\npm\node_modules\node-gyp\src\win_delay_load_hook.cc"/>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>

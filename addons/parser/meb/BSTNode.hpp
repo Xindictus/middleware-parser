@@ -2,8 +2,8 @@
 // Created by konst on 13-Dec-19.
 //
 
-#ifndef TEST_BSTNODE_HPP
-#define TEST_BSTNODE_HPP
+#ifndef MEB_PARSER_BSTNODE_HPP
+#define MEB_PARSER_BSTNODE_HPP
 
 #include <iostream>
 
@@ -22,4 +22,4 @@ public:
 };
 
 
-#endif //TEST_BSTNODE_HPP
+#endif //MEB_PARSER_BSTNODE_HPP

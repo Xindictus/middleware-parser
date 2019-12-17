@@ -248,9 +248,11 @@ void AVL<BSTNodeType>::node_to_js_array(BSTNodeType *node, napi_env env, napi_va
     /****/
     napi_value action_btns;
     std::string actions;
-    actions.reserve(100);
+    actions.reserve(130);
 
-    actions.append("<button class='btn btn-info export-call' type='btn' value='");
+    actions.append("<button class='btn btn-info export-call' type='btn' data-call-id='");
+    actions.append(node->m_key);
+    actions.append("' data-cursor-pos='");
     actions.append(std::to_string(node->m_tellg_bytes));
     actions.append("'>Export Call</button>");
 

@@ -6,8 +6,10 @@
         'addons/common_headers',
       ],
       "sources": [
-        'addons/parser/meb/ParserModule.cpp',
-        'addons/parser/meb/BSTNode.cpp'
+        'addons/common_headers/FlowCreator.cpp',
+        'addons/parser/meb/BSTNode.cpp',
+        'addons/parser/meb/RepetitionNinja.cpp',
+        'addons/parser/meb/ParserModule.cpp'
       ]
     }
   ]

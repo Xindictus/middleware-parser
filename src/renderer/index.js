@@ -30,46 +30,131 @@ class Loader {
 }
 
 function handleFiles(obj) {
-    // const fileList = this.files;
-    console.log(obj);
     const fileList = obj.files;
-    // const fileListSize = fileList.length;
-    // const regexFileCheck = /[a-zA-Z0-9_].log/;
 
-    // if (regexFileCheck.exec(fileList[i].name)) {
-    //     console.log("ok");
-    // }
     return (fileList.length) ? fileList[0].path : "";
 }
 
-const loader = new Loader();
+function toggle_btn_disable(btn, flag) {
+    if (flag) {
+        btn.disabled = false;
+        btn.classList.remove('disabled', 'disable-cursor');
+    } else {
+        btn.disabled = true;
+        btn.classList.add('disabled', 'disable-cursor');
+    }
+}
 
-let incoming_table = $('#example');
-let file_alert = document.getElementById('file_alert');
-let log_path = document.getElementById('log_path');
-let testbtn = document.getElementById('testbtn');
-let testpath = document.getElementById('testpath');
-let trace_analysis = document.getElementById('trace_analysis');
+const {dialog} = require('electron').remote;
+const loader = new Loader();
+const incoming_table = $('#incoming_table');
+const outgoing_table = $('#outgoing_table');
+const file_alert = document.getElementById('file_alert');
+const log_path = document.getElementById('log_path');
+const btn_parse = document.getElementById('btn_parse');
+const output_log_path = document.getElementById('output_log_path');
+const modal_call_id = document.getElementById('modal_call_id');
+const modal_cursor_pos = document.getElementById('modal_cursor_pos');
+const modal_output_path = document.getElementById('modal_output_path');
+const modal_btn_export = document.getElementById('modal_btn_export');
+const modal_output_div = document.getElementById('modal_output_div');
+
+const export_modal = $('#exampleModal');
 
 log_path.addEventListener("change", () => {
     file_alert.style.display = "none";
+
+    toggle_btn_disable(btn_parse, handleFiles(log_path));
 });
 
-testbtn.onclick = () => {
+modal_output_div.onclick = () => {
+    dialog.showSaveDialog({
+        title: "Choose where to save exported trace",
+        buttonLabel: "Okay",
+        defaultPath: modal_call_id.value + "_export.log"
+    }).then(result => {
+        modal_output_path.value = result.filePath;
+
+        if (!result.canceled) {
+            toggle_btn_disable(modal_btn_export, 1);
+        } else {
+            toggle_btn_disable(modal_btn_export, 0);
+        }
+    }).catch(err => {
+        console.log(err);
+        toggle_btn_disable(modal_btn_export, 0);
+    });
+};
+
+modal_btn_export.onclick = () => {
+    // loaders and such
+    loader.on();
+    // TODO: start exporting
+    setTimeout(() => {
+        exportToFile();
+
+        export_modal.modal('toggle');
+    }, 100);
+    // Close modal
+};
+
+//trace analysis
+// const {BrowserWindow} = require('electron').remote;
+// const {format} = require('url');
+// let win = new BrowserWindow({width: 800, height: 600});
+// win.loadURL(format({
+//     pathname: path.join(__dirname, 'sequence.html'),
+//     protocol: 'file:',
+//     slashes: true
+// }));
+// win.show();
+
+function exportToFile() {
+    let path = modal_output_path.value;
+
+    if (path !== "") {
+        addon.exportCall(modal_call_id.value, parseInt(modal_cursor_pos.value),
+            handleFiles(log_path), path);
+
+        new Notification('Exporting Completed', {
+            body: 'Call-ID: ' + call_id + ' was exported successfully to '
+        });
+    }
+}
+
+function prepareExportToFile() {
+    // Get call-id to export (slice HEX part out of the call-id)
+    modal_call_id.value = this.dataset.callId.slice(2);
+    // Get cursor position for faster export
+    modal_cursor_pos.value = this.dataset.cursorPos;
+    // Open modal
+    export_modal.modal();
+}
+
+function exportBtnListener() {
+    Array.from(document.querySelectorAll('.export-call')).forEach(link => {
+        link.addEventListener('click', prepareExportToFile);
+    });
+}
+
+btn_parse.onclick = () => {
     let file_path = handleFiles(log_path);
+    // TODO: remove fixed path, currently only for test
+    // file_path = "C:/Users/A745268/test/12.log";
 
     if (file_path === "") {
         file_alert.style.display = "block";
     } else {
         loader.on();
         incoming_table.empty();
+        outgoing_table.empty();
         // TODO: set btn disabled
 
         setTimeout(() => {
-            let calls = addon.parseLog(handleFiles(log_path));
+            let calls = addon.parseLog(file_path);
             console.log(calls);
 
-            incoming_table.DataTable({
+            let test = incoming_table.DataTable({
                 "destroy": true,
                 "data": calls['incoming_calls'],
                 "columns": [
@@ -80,20 +165,32 @@ testbtn.onclick = () => {
                 ]
             });
 
+            outgoing_table.DataTable({
+                "destroy": true,
+                "data": calls['outgoing_calls'],
+                "columns": [
+                    {"data": "timestamp"},
+                    {"data": "call_id"},
+                    {"data": "line"},
+                    {"data": "actions"}
+                ]
+            });
+
+            // Refresh listeners on pagination, ordering and search
+            incoming_table.on('draw.dt', exportBtnListener);
+            outgoing_table.on('draw.dt', exportBtnListener);
+            // TODO: restrict refresh of btn listeners per table event
+
+            exportBtnListener();
+
             loader.off();
+
+            new Notification('Parsing Completed', {
+                body: 'Incoming calls: ' + calls['incoming_calls'].length
+                    + '\nOutgoing calls: ' + calls['outgoing_calls'].length
+            });
         }, 100);
     }
-};
-
-testpath.onclick = () => {
-    // console.log(log_path.files);
-    console.log(handleFiles(log_path));
-};
-
-trace_analysis.onclick = () => {
-    // console.log(addon.exportCall("0x80000065", 30182000));
-    // console.log(addon.exportCall(30182000, "80000065"));
-    console.log(addon.exportCall("80000065", 30182000));
 };
 
 // function init() {
@@ -117,5 +214,5 @@ trace_analysis.onclick = () => {
 
 $(document).ready(function () {
     incoming_table.DataTable();
-    // outgoing_table.DataTable();
+    outgoing_table.DataTable();
 });
