@@ -42,7 +42,7 @@ namespace demo {
         status = napi_get_value_string_utf8(env, argv[0], NULL, 0, &path_buffer_size);
 
         if (status != napi_ok) {
-            napi_throw_error(env, NULL, "Failed to parse log path!");
+            napi_throw_error(env, NULL, "Failed to parse log path size!");
         }
 
         path_buffer = (char *) malloc(path_buffer_size + 1);
@@ -195,7 +195,7 @@ namespace demo {
         status = napi_get_value_string_utf8(env, argv[2], NULL, 0, &path_buffer_size);
 
         if (status != napi_ok) {
-            napi_throw_error(env, NULL, "Failed to parse input log path!");
+            napi_throw_error(env, NULL, "Failed to parse input log path size!");
         }
 
         path_buffer_input = (char *) malloc(path_buffer_size + 1);
@@ -212,7 +212,7 @@ namespace demo {
         status = napi_get_value_string_utf8(env, argv[3], NULL, 0, &path_buffer_size);
 
         if (status != napi_ok) {
-            napi_throw_error(env, NULL, "Failed to parse output log path!");
+            napi_throw_error(env, NULL, "Failed to parse output log path size!");
         }
 
         path_buffer_output = (char *) malloc(path_buffer_size + 1);
@@ -265,16 +265,40 @@ namespace demo {
     }
 
     napi_value AnalyzeTraceCall(napi_env env, napi_callback_info info) {
-//        size_t trace_path_size = 0;
-//        char *trace_path;
-        std::string line;
-//        napi_value flow_sequence;
-//        napi_status status;
-        // TODO: get trace path
+        size_t argc = 1;
+        napi_value flow_sequence, argv[1];
+        napi_status status;
 
-        // TODO: open file
+        size_t path_buffer_size = 0;
+        char *path_buffer_input;
+        std::string line;
+
+        // Parsing arguments coming from JS
+        status = napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+
+        if (status != napi_ok) {
+            napi_throw_error(env, NULL, "Failed to parse arguments");
+        }
+
+        // Parsing input trace file
+        status = napi_get_value_string_utf8(env, argv[0], NULL, 0, &path_buffer_size);
+
+        if (status != napi_ok) {
+            napi_throw_error(env, NULL, "Failed to parse input log path size!");
+        }
+
+        path_buffer_input = (char *) malloc(path_buffer_size + 1);
+
+        status = napi_get_value_string_utf8(env, argv[0], path_buffer_input, path_buffer_size + 1, &path_buffer_size);
+
+        if (status != napi_ok) {
+            napi_throw_error(env, NULL, "Failed to parse input log path!");
+        }
+
+        path_buffer_input[path_buffer_size] = '\0';
+
         // Open file
-        std::ifstream infile("test.log", std::ifstream::binary | std::ifstream::in);
+        std::ifstream infile(path_buffer_input, std::ifstream::binary | std::ifstream::in);
 
         std::regex messages_meb(R"(e[A-Z0-9]{3,4}_[A-Z0-9]{3,4}_[a-zA-Z0-9_]*)");
 
@@ -295,9 +319,14 @@ namespace demo {
             }
         }
 
-        // TODO: return flowchart
+        free(path_buffer_input);
 
-        return nullptr;
+        // TODO: return flowchart and fix free
+//        status = napi_create_string_utf8(env, path_buffer_input, NAPI_AUTO_LENGTH, &flow_sequence);
+        status = napi_create_string_utf8(env, flow.getFlowSequenceStr().c_str(), NAPI_AUTO_LENGTH, &flow_sequence);
+        if (status != napi_ok) return nullptr;
+
+        return flow_sequence;
     }
 
     napi_value init(napi_env env, napi_value exports) {

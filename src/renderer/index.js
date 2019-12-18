@@ -2,11 +2,13 @@
 
 console.log("i was loaded");
 
-// hello.js
-const addon = require('../../build/Release/MebParser');
+// REQUIRES
+const {dialog} = require('electron').remote;
 const path = require('path');
 const basePath = __dirname;
+const addon = require('../../build/Release/MebParser');
 
+// CLASSES
 class Loader {
     constructor() {
         this.container = document.getElementsByClassName("container")[0];
@@ -29,6 +31,7 @@ class Loader {
     }
 }
 
+// FUNCTIONS
 function handleFiles(obj) {
     const fileList = obj.files;
 
@@ -45,27 +48,67 @@ function toggle_btn_disable(btn, flag) {
     }
 }
 
-const {dialog} = require('electron').remote;
+function exportToFile() {
+    let path = modal_output_path.value;
+
+    if (path !== "") {
+        addon.exportCall(modal_call_id.value, parseInt(modal_cursor_pos.value), handleFiles(log_path), path);
+
+        new Notification('Exporting Completed', {
+            body: 'Call-ID: ' + modal_call_id.value + ' was exported successfully to ' + path
+        });
+    }
+}
+
+function prepareExportToFile() {
+    // Get call-id to export (slice HEX part out of the call-id)
+    modal_call_id.value = this.dataset.callId.slice(2);
+    // Get cursor position for faster export
+    modal_cursor_pos.value = this.dataset.cursorPos;
+    // Open modal
+    export_modal.modal();
+}
+
+function exportBtnListener() {
+    Array.from(document.querySelectorAll('.export-call')).forEach(link => {
+        link.addEventListener('click', prepareExportToFile);
+    });
+}
+
+// DEFINES
 const loader = new Loader();
 const incoming_table = $('#incoming_table');
 const outgoing_table = $('#outgoing_table');
 const file_alert = document.getElementById('file_alert');
 const log_path = document.getElementById('log_path');
 const btn_parse = document.getElementById('btn_parse');
-const output_log_path = document.getElementById('output_log_path');
+const trace_analysis = document.getElementById('trace_analysis');
 const modal_call_id = document.getElementById('modal_call_id');
 const modal_cursor_pos = document.getElementById('modal_cursor_pos');
 const modal_output_path = document.getElementById('modal_output_path');
 const modal_btn_export = document.getElementById('modal_btn_export');
 const modal_output_div = document.getElementById('modal_output_div');
+const export_modal = $('#exportModal');
 
-const export_modal = $('#exampleModal');
-
+// EVENT LISTENERS
 log_path.addEventListener("change", () => {
     file_alert.style.display = "none";
 
     toggle_btn_disable(btn_parse, handleFiles(log_path));
 });
+
+// ON CLICK LISTENERS
+modal_btn_export.onclick = () => {
+    // loaders and such
+    loader.on();
+    // TODO: start exporting
+    setTimeout(() => {
+        exportToFile();
+        loader.off();
+        export_modal.modal('toggle');
+    }, 100);
+    // Close modal
+};
 
 modal_output_div.onclick = () => {
     dialog.showSaveDialog({
@@ -85,57 +128,6 @@ modal_output_div.onclick = () => {
         toggle_btn_disable(modal_btn_export, 0);
     });
 };
-
-modal_btn_export.onclick = () => {
-    // loaders and such
-    loader.on();
-    // TODO: start exporting
-    setTimeout(() => {
-        exportToFile();
-
-        export_modal.modal('toggle');
-    }, 100);
-    // Close modal
-};
-
-//trace analysis
-// const {BrowserWindow} = require('electron').remote;
-// const {format} = require('url');
-// let win = new BrowserWindow({width: 800, height: 600});
-// win.loadURL(format({
-//     pathname: path.join(__dirname, 'sequence.html'),
-//     protocol: 'file:',
-//     slashes: true
-// }));
-// win.show();
-
-function exportToFile() {
-    let path = modal_output_path.value;
-
-    if (path !== "") {
-        addon.exportCall(modal_call_id.value, parseInt(modal_cursor_pos.value),
-            handleFiles(log_path), path);
-
-        new Notification('Exporting Completed', {
-            body: 'Call-ID: ' + call_id + ' was exported successfully to '
-        });
-    }
-}
-
-function prepareExportToFile() {
-    // Get call-id to export (slice HEX part out of the call-id)
-    modal_call_id.value = this.dataset.callId.slice(2);
-    // Get cursor position for faster export
-    modal_cursor_pos.value = this.dataset.cursorPos;
-    // Open modal
-    export_modal.modal();
-}
-
-function exportBtnListener() {
-    Array.from(document.querySelectorAll('.export-call')).forEach(link => {
-        link.addEventListener('click', prepareExportToFile);
-    });
-}
 
 btn_parse.onclick = () => {
     let file_path = handleFiles(log_path);
@@ -193,26 +185,42 @@ btn_parse.onclick = () => {
     }
 };
 
-// function init() {
-//
-//     let myNotification = new Notification('Title', {
-//         body: 'Lorem Ipsum Dolor Sit Amet'
-//     });
-//
-//
-//     myNotification.onclick = () => {
-//         console.log('Notification clicked');
-//         console.log(addon.parseLog());
-//     };
-// }
-//
-// init();
+trace_analysis.onclick = () => {
+    let analysis_result = addon.analyzeCall("C:/Users/konst/PhpstormProjects/test/test.log");
+
+    if (analysis_result !== null) {
+        const {BrowserWindow} = require('electron').remote;
+        const {format} = require('url');
+        let win = new BrowserWindow({
+            width: 800,
+            height: 600,
+            webPreferences: {
+                nodeIntegration: true
+            }
+        });
+        win.webContents.openDevTools();
+        win.loadURL(format({
+            pathname: path.join(__dirname, 'sequence.html'),
+            protocol: 'file:',
+            slashes: true
+        }));
+
+        win.webContents.on('did-finish-load', () => {
+            win.show();
+        });
+
+        setTimeout(() => {
+            win.webContents.send('flowchart_data', analysis_result);
+        }, 2000);
+    }
+};
 
 // let start = Date.now();
 // let end = Date.now();
 // console.log(`seconds elapsed = ${(end - start) / 1000}`);
 
 $(document).ready(function () {
+    // DataTable initialization
     incoming_table.DataTable();
     outgoing_table.DataTable();
 });
