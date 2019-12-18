@@ -19,6 +19,7 @@
   "dependencies": {
     "bootstrap": "^4.4.1",
     "jquery": "^3.4.1",
+    "mermaid": "^8.4.4",
     "popper.js": "^1.16.0",
     "source-map-support": "^0.5.12"
   },

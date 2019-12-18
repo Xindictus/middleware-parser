@@ -186,7 +186,8 @@ btn_parse.onclick = () => {
 };
 
 trace_analysis.onclick = () => {
-    let analysis_result = addon.analyzeCall("C:/Users/konst/PhpstormProjects/test/test.log");
+    // let analysis_result = addon.analyzeCall("C:/Users/konst/PhpstormProjects/test/test.log");
+    let analysis_result = addon.analyzeCall(handleFiles(log_path));
 
     if (analysis_result !== null) {
         const {BrowserWindow} = require('electron').remote;
@@ -198,7 +199,7 @@ trace_analysis.onclick = () => {
                 nodeIntegration: true
             }
         });
-        win.webContents.openDevTools();
+        // win.webContents.openDevTools();
         win.loadURL(format({
             pathname: path.join(__dirname, 'sequence.html'),
             protocol: 'file:',
@@ -206,12 +207,12 @@ trace_analysis.onclick = () => {
         }));
 
         win.webContents.on('did-finish-load', () => {
+            win.webContents.send('flowchart_data', analysis_result);
             win.show();
         });
 
-        setTimeout(() => {
-            win.webContents.send('flowchart_data', analysis_result);
-        }, 2000);
+        // setTimeout(() => {
+        // }, 2000);
     }
 };
 
