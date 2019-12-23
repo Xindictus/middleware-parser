@@ -199,7 +199,7 @@ trace_analysis.onclick = () => {
                 nodeIntegration: true
             }
         });
-        // win.webContents.openDevTools();
+        win.webContents.openDevTools();
         win.loadURL(format({
             pathname: path.join(__dirname, 'sequence.html'),
             protocol: 'file:',
@@ -210,6 +210,8 @@ trace_analysis.onclick = () => {
             win.webContents.send('flowchart_data', analysis_result);
             win.show();
         });
+
+        // TODO: null on close
 
         // setTimeout(() => {
         // }, 2000);
