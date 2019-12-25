@@ -1,0 +1,64 @@
+
+pre {
+    white-space: pre-wrap; /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+    /*white-space: -pre-wrap; !* Opera 4-6 *!*/
+    white-space: -o-pre-wrap; /* Opera 7 */
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
+    /*background-color: #eee;*/
+    /*background-color: #6C757D;*/
+    background-color: black;
+    color: whitesmoke;
+    overflow: auto;
+    margin: 0 0 1em;
+    padding: .5em 0.5em;
+    font-family: "Courier New", Courier, monospace;
+    width: 100%;
+}
+
+pre:hover {
+    /*cursor: copy;*/
+    cursor: url(../../img/cursors/infinity_pointer.cur), default;
+}
+
+pre code,
+pre .line-number {
+    /*color: black;*/
+    /*display: inline;*/
+}
+
+pre .line-number {
+    float: left;
+    margin: 0 1em 0 -1em;
+    border-right: 0.1em solid;
+    text-align: right;
+    /*color: blueviolet;*/
+    /*color: maroon;*/
+    color: darkorange;
+}
+
+pre .line-number {
+    display: block;
+    padding: 0 .5em 0 1em;
+    /* not selectable */
+    -webkit-user-select: none; /* Chrome/Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+    /* Rules below not implemented in browsers yet */
+    -o-user-select: none;
+    user-select: none;
+}
+
+pre .cl {
+    display: block;
+    clear: both;
+}
+
+.selected {
+    /*background-color: #9fcdff;*/
+    /*background-color: #5A6268;*/
+    background-color: #585858;
+    display: block;
+
+}
+

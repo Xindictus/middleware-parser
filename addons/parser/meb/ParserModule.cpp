@@ -5,6 +5,7 @@
 #include <regex>
 //#include <chrono>
 #include <iostream>
+#include <sstream>
 //#include <utility>
 
 #include "BST.hpp"
@@ -266,7 +267,7 @@ namespace demo {
 
     napi_value AnalyzeTraceCall(napi_env env, napi_callback_info info) {
         size_t argc = 1;
-        napi_value flow_sequence, argv[1];
+        napi_value flow_sequence, line_sequence, line_value, obj, argv[1];
         napi_status status;
 
         size_t path_buffer_size = 0;
@@ -297,36 +298,140 @@ namespace demo {
 
         path_buffer_input[path_buffer_size] = '\0';
 
+        // Create JS array to save line numbers
+        status = napi_create_array(env, &line_sequence);
+        if (status != napi_ok) return nullptr;
+
+        // Create JS return object
+        status = napi_create_object(env, &obj);
+        if (status != napi_ok) return nullptr;
+
         // Open file
         std::ifstream infile(path_buffer_input, std::ifstream::binary | std::ifstream::in);
 
-        std::regex messages_meb(R"(e[A-Z0-9]{3,4}_[A-Z0-9]{3,4}_[a-zA-Z0-9_]*)");
+        std::regex messages_meb(R"(\se[A-Z0-9]{3,4}_[A-Z0-9]{3,4}_[a-zA-Z0-9_]*)");
 
         std::smatch m;
 
         RepetitionNinja checker;
         FlowCreator flow(5000);
 
+        int line_count = 0, index = 0;
+
+//        int cur_pos = infile.tellg();
+
+        // TODO: return cursor and timestamp as well
         while (std::getline(infile, line)) {
+            ++line_count;
             // Check for MEB messages
             if (std::regex_search(line, m, messages_meb)) {
                 // For each message, filter duplicates and append them to flow string
                 for (const auto &i : m) {
                     if (!checker.isRepeated(i.str())) {
-                        flow.append(i.str().substr(1));
+//                        flow.append(i.str().substr(1));
+                        flow.append(i.str().substr(2), line.substr(11, 12));
+
+                        status = napi_create_int32(env, line_count, &line_value);
+                        if (status != napi_ok) return nullptr;
+
+                        status = napi_set_element(env, line_sequence, index++, line_value);
+                        if (status != napi_ok) return nullptr;
                     }
                 }
             }
+
+//            cur_pos = infile.tellg();
         }
 
         free(path_buffer_input);
 
-        // TODO: return flowchart and fix free
-//        status = napi_create_string_utf8(env, path_buffer_input, NAPI_AUTO_LENGTH, &flow_sequence);
         status = napi_create_string_utf8(env, flow.getFlowSequenceStr().c_str(), NAPI_AUTO_LENGTH, &flow_sequence);
         if (status != napi_ok) return nullptr;
 
-        return flow_sequence;
+        status = napi_set_named_property(env, obj, "flow_sequence", flow_sequence);
+        if (status != napi_ok) return nullptr;
+
+        status = napi_set_named_property(env, obj, "line_sequence", line_sequence);
+        if (status != napi_ok) return nullptr;
+
+        return obj;
+    }
+
+    napi_value PreviewTraceLines(napi_env env, napi_callback_info info) {
+        int trace_line = 0, before_and_after = 0, current_line = 0;
+        std::string line;
+        size_t argc = 2;
+        napi_value argv[2], preview_lines;
+        napi_status status;
+
+        // Parsing arguments coming from JS
+        status = napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+
+        if (status != napi_ok) {
+            napi_throw_error(env, NULL, "Failed to parse arguments");
+        }
+
+        // Get trace line from JS
+        status = napi_get_value_int32(env, argv[0], &trace_line);
+
+        if (status != napi_ok) {
+            napi_throw_error(env, NULL, "Invalid trace line was passed as an argument!");
+        }
+
+        // Get before and after max lines from JS
+        status = napi_get_value_int32(env, argv[1], &before_and_after);
+
+        if (status != napi_ok) {
+            napi_throw_error(env, NULL, "Invalid number of lines to return was passed as an argument!");
+        }
+
+        std::ifstream infile("C:/Users/konst/PhpstormProjects/parser/800000e9_export.log",
+                             std::ifstream::binary | std::ifstream::in);
+
+        std::stringstream output;
+
+        int index = 0;
+        napi_value obj, line_value, code_trace, js_array;
+
+        // Create JS array to save line numbers
+        status = napi_create_array(env, &js_array);
+        if (status != napi_ok) return nullptr;
+
+        while (std::getline(infile, line)) {
+            ++current_line;
+
+            if (std::abs(trace_line - current_line) <= before_and_after) {
+                // Creating new object
+                status = napi_create_object(env, &obj);
+                if (status != napi_ok) return nullptr;
+
+                // Preparing code line
+                status = napi_create_int32(env, current_line, &line_value);
+                if (status != napi_ok) return nullptr;
+
+                // Preparing code trace
+                status = napi_create_string_utf8(env, line.c_str(), line.length(), &code_trace);
+                if (status != napi_ok) return nullptr;
+
+                // Add properties to object
+                status = napi_set_named_property(env, obj, "line", line_value);
+                if (status != napi_ok) return nullptr;
+
+                status = napi_set_named_property(env, obj, "trace", code_trace);
+                if (status != napi_ok) return nullptr;
+
+                // Add object to array
+                status = napi_set_element(env, js_array, index++, obj);
+                if (status != napi_ok) return nullptr;
+
+                output << line << '\n';
+            }
+        }
+
+//        status = napi_create_string_utf8(env, output.str().c_str(), NAPI_AUTO_LENGTH, &preview_lines);
+//        if (status != napi_ok) return nullptr;
+
+        return js_array;
     }
 
     napi_value init(napi_env env, napi_value exports) {
@@ -349,6 +454,12 @@ namespace demo {
         if (status != napi_ok) return nullptr;
 
         status = napi_set_named_property(env, exports, "analyzeCall", fn);
+        if (status != napi_ok) return nullptr;
+
+        status = napi_create_function(env, nullptr, 0, PreviewTraceLines, nullptr, &fn);
+        if (status != napi_ok) return nullptr;
+
+        status = napi_set_named_property(env, exports, "previewTraceLines", fn);
         if (status != napi_ok) return nullptr;
 
         return exports;

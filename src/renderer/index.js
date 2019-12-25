@@ -1,7 +1,5 @@
 'use strict';
 
-console.log("i was loaded");
-
 // REQUIRES
 const {dialog} = require('electron').remote;
 const path = require('path');
@@ -144,7 +142,6 @@ btn_parse.onclick = () => {
 
         setTimeout(() => {
             let calls = addon.parseLog(file_path);
-            console.log(calls);
 
             let test = incoming_table.DataTable({
                 "destroy": true,
@@ -190,6 +187,8 @@ trace_analysis.onclick = () => {
     let analysis_result = addon.analyzeCall(handleFiles(log_path));
 
     if (analysis_result !== null) {
+        analysis_result.path = handleFiles(log_path);
+
         const {BrowserWindow} = require('electron').remote;
         const {format} = require('url');
         let win = new BrowserWindow({
@@ -199,7 +198,7 @@ trace_analysis.onclick = () => {
                 nodeIntegration: true
             }
         });
-        win.webContents.openDevTools();
+        // win.webContents.openDevTools();
         win.loadURL(format({
             pathname: path.join(__dirname, 'sequence.html'),
             protocol: 'file:',

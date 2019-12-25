@@ -1,0 +1,45 @@
+
+g {
+    -webkit-user-select: none; /* Chrome/Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+
+    /* Rules below not implemented in browsers yet */
+    -o-user-select: none;
+    user-select: none;
+}
+
+.clickable-node {
+    cursor: pointer;
+}
+
+.hoverable-node:hover line {
+    /*fill: red !important;*/
+    stroke: darkorange !important;
+}
+
+.hoverable-node:hover text {
+    font-size: 1.1em;
+    fill: darkorange !important;
+    /*stroke: lightgray !important;*/
+}
+
+.node-focus {
+    font-size: 1.1em;
+    /*color: red !important;*/
+    fill: red !important;
+    fill-opacity: 0.5;
+    /*stroke-width: 5 !important;*/
+}
+
+.node-focus text {
+    font-size: 1.1em;
+    /*color: red !important;*/
+    /*fill: red !important;*/
+    fill-opacity: 0.5;
+    /*stroke-width: 5 !important;*/
+}
+
+.node-focus line {
+    /*stroke: red !important;*/
+}

@@ -9,7 +9,8 @@
 // TODO: CHANGE DEFINITIONS OF ARROWS ACCORDING TO MERMAID
 FlowCreator::FlowCreator(int reserve_size) : note_over("Note over "), normal_line("->"), dashed_line("-->"),
                                              open_arrow("->>"), dashed_open("-->>"), semicolon(": "),
-                                             line_change("\n"), participant("participant ") {
+                                             line_change("\n"), participant("participant "),
+                                             message_line("<br/>"), message_double_line("<br/><br/>") {
 
     this->flow_sequence_str.reserve(reserve_size);
 //    this->flow_sequence_str.append("Title: MEB trace diagram");
@@ -62,6 +63,36 @@ void FlowCreator::append(const std::string &str) {
         this->flow_sequence_str.append(this->semicolon);
         this->flow_sequence_str.append(message);
     }
+
+    this->flow_sequence_str.append(this->line_change);
+}
+
+void FlowCreator::append(const std::string &str, const std::string &timestamp) {
+    std::istringstream f(str);
+    std::string actor_1;
+    std::string actor_2;
+    std::string message;
+
+    std::getline(f, actor_1, '_');
+    std::getline(f, actor_2, '_');
+    std::getline(f, message);
+
+    if (actor_1 != actor_2) {
+        this->flow_sequence_str.append(actor_1);
+        this->flow_sequence_str.append(
+                (actor_1 == "NQU" || actor_2 == "NQU") ? this->dashed_open : this->open_arrow
+        );
+        this->flow_sequence_str.append(actor_2);
+    } else {
+        this->flow_sequence_str.append(this->note_over);
+        this->flow_sequence_str.append(actor_1);
+    }
+
+    // Creating message for diagram
+    this->flow_sequence_str.append(this->semicolon);
+    this->flow_sequence_str.append(message);
+    this->flow_sequence_str.append(this->message_double_line);
+    this->flow_sequence_str.append(timestamp);
 
     this->flow_sequence_str.append(this->line_change);
 }

@@ -17,6 +17,8 @@ private:
     const std::string semicolon;
     const std::string line_change;
     const std::string participant;
+    const std::string message_line;
+    const std::string message_double_line;
 
     std::string flow_sequence_str;
 
@@ -24,6 +26,7 @@ public:
     explicit FlowCreator(int reserve_size = 2000);
 
     void append(const std::string &);
+    void append(const std::string &, const std::string &);
 
     const std::string &getFlowSequenceStr() const;
 };
