@@ -72,5 +72,6 @@ app.on('activate', () => {
 
 // create main BrowserWindow when electron is ready
 app.on('ready', () => {
+    app.setAppUserModelId('com.xindictus.multi-parser');
     mainWindow = createMainWindow();
 });

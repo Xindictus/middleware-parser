@@ -73,20 +73,6 @@
     "want_separate_host_toolset": 0,
     "nodedir": "C:\\Users\\konst\\AppData\\Local\\node-gyp\\Cache\\13.2.0",
     "standalone_static_library": 1,
-    "msbuild_path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\MSBuild\\15.0\\Bin\\MSBuild.exe",
-    "bin_links": "true",
-    "ignore_optional": "",
-    "ignore_scripts": "",
-    "init_license": "MIT",
-    "init_version": "1.0.0",
-    "registry": "https://registry.yarnpkg.com",
-    "save_prefix": "^",
-    "strict_ssl": "true",
-    "user_agent": "yarn/1.21.1 npm/? node/v13.2.0 win32 x64",
-    "version_commit_hooks": "true",
-    "version_git_message": "v%s",
-    "version_git_sign": "",
-    "version_git_tag": "true",
-    "version_tag_prefix": "v"
+    "msbuild_path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\MSBuild\\15.0\\Bin\\MSBuild.exe"
   }
 }

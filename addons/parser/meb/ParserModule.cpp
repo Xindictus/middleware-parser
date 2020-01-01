@@ -373,9 +373,10 @@ namespace demo {
 
     napi_value PreviewTraceLines(napi_env env, napi_callback_info info) {
         int trace_line = 0, before_and_after = 0, current_line = 0;
+        char *path_buffer_input;
         std::string line;
-        size_t argc = 2;
-        napi_value argv[2];
+        size_t argc = 3, path_buffer_size;
+        napi_value argv[3];
         napi_status status;
 
         // Parsing arguments coming from JS
@@ -399,9 +400,24 @@ namespace demo {
             napi_throw_error(env, NULL, "Invalid number of lines to return was passed as an argument!");
         }
 
-        // TODO: Get dynamic file path
-        std::ifstream infile("C:/Users/konst/PhpstormProjects/parser/800000e9_export.log",
-                             std::ifstream::binary | std::ifstream::in);
+        // Parsing input trace file
+        status = napi_get_value_string_utf8(env, argv[2], NULL, 0, &path_buffer_size);
+
+        if (status != napi_ok) {
+            napi_throw_error(env, NULL, "Failed to parse input log path size!");
+        }
+
+        path_buffer_input = (char *) malloc(path_buffer_size + 1);
+
+        status = napi_get_value_string_utf8(env, argv[2], path_buffer_input, path_buffer_size + 1, &path_buffer_size);
+
+        if (status != napi_ok) {
+            napi_throw_error(env, NULL, "Failed to parse input log path!");
+        }
+
+        path_buffer_input[path_buffer_size] = '\0';
+
+        std::ifstream infile(path_buffer_input, std::ifstream::binary | std::ifstream::in);
 
         std::stringstream output;
 
@@ -443,17 +459,44 @@ namespace demo {
             }
         }
 
+        free(path_buffer_input);
+
         return js_array;
     }
 
     napi_value GetTraceStatistics(napi_env env, napi_callback_info info) {
         int bytes = 0;
+        char *path_buffer_input;
+        size_t argc = 1, path_buffer_size;
         std::string line, tmp, ret;
-        napi_value bytes_ret, ret_js;
+        napi_value bytes_ret, argv[1];
         napi_status status;
 
-        std::ifstream infile("C:/Users/konst/PhpstormProjects/parser/800000e9_export.log",
-                             std::ifstream::binary | std::ifstream::in);
+        // Parsing arguments coming from JS
+        status = napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+
+        if (status != napi_ok) {
+            napi_throw_error(env, NULL, "Failed to parse arguments");
+        }
+
+        // Parsing input trace file
+        status = napi_get_value_string_utf8(env, argv[0], NULL, 0, &path_buffer_size);
+
+        if (status != napi_ok) {
+            napi_throw_error(env, NULL, "Failed to parse input log path size!");
+        }
+
+        path_buffer_input = (char *) malloc(path_buffer_size + 1);
+
+        status = napi_get_value_string_utf8(env, argv[0], path_buffer_input, path_buffer_size + 1, &path_buffer_size);
+
+        if (status != napi_ok) {
+            napi_throw_error(env, NULL, "Failed to parse input log path!");
+        }
+
+        path_buffer_input[path_buffer_size] = '\0';
+
+        std::ifstream infile(path_buffer_input, std::ifstream::binary | std::ifstream::in);
 
         std::regex components(R"(\s\s[a-zA-Z0-9\s]{12}\d\s)");
         std::smatch m;
@@ -474,6 +517,8 @@ namespace demo {
                 }
             }
         }
+
+        free(path_buffer_input);
 
         napi_value js_obj;
         status = napi_create_object(env, &js_obj);

@@ -43,7 +43,7 @@
     }
   },
   "build": {
-    "appId": "com.my-website.my-app",
+    "appId": "com.xindictus.multi-parser",
     "productName": "MEBParser",
     "target": "NSIS",
     "copyright": "Copyright © 2019 ${author}",

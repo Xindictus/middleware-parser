@@ -200,7 +200,7 @@ trace_analysis.onclick = () => {
                 nodeIntegration: true
             }
         });
-        // win.webContents.openDevTools();
+        win.webContents.openDevTools();
         win.loadURL(format({
             pathname: path.join(__dirname, 'sequence.html'),
             protocol: 'file:',

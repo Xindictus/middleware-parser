@@ -91,6 +91,7 @@ require('electron').ipcRenderer.on('flowchart_data', function (event, analysis_r
 
     // Set the flow of the svg to its respective element
     document.getElementById('diagram').textContent = analysis_result['flow_sequence'];
+    let file_path = analysis_result['path'];
 
     // Initialize SVG
     console.time("Mermaid");
@@ -119,8 +120,7 @@ require('electron').ipcRenderer.on('flowchart_data', function (event, analysis_r
         let index_of_clicked = graph_elements.index(this);
         let trace_line = analysis_result['line_sequence'][index_of_clicked];
 
-        // TODO: Get analysis.path
-        let trace_preview = addon.previewTraceLines(trace_line, parseInt(previewLinesNo.value));
+        let trace_preview = addon.previewTraceLines(trace_line, parseInt(previewLinesNo.value), file_path);
 
         // let pre = document.getElementById('preview_trace');
         pre.empty();
@@ -177,7 +177,7 @@ require('electron').ipcRenderer.on('flowchart_data', function (event, analysis_r
         svg.find('.xin-rect').remove();
     });
 
-    let bar_data = addon.getTraceStatistics();
+    let bar_data = addon.getTraceStatistics(file_path);
 
     let keys = Object.keys(bar_data);
     let values = Object.values(bar_data);
