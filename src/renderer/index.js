@@ -6,6 +6,8 @@ const path = require('path');
 const basePath = __dirname;
 const addon = require('../../build/Release/MebParser');
 
+console.log("Loaded");
+
 // CLASSES
 class Loader {
     constructor() {

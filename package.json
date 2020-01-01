@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "bootstrap": "^4.4.1",
+    "chart.js": "^2.9.3",
     "jquery": "^3.4.1",
     "mermaid": "^8.4.4",
     "popper.js": "^1.16.0",

@@ -1,6 +1,7 @@
 // REQUIRES
 // const {dialog} = require('electron').remote;
 const mermaid = require('mermaid');
+const Chart = require('chart.js');
 const addon = require('../../build/Release/MebParser');
 
 let svg = undefined;
@@ -9,6 +10,8 @@ const previewLinesNo = document.getElementById('previewLineNo');
 const colors = $('.color-square');
 const clearSelectedColor = document.getElementById('clear_selected_color');
 const clearAllColors = document.getElementById('clear_all_colors');
+const ctx = document.getElementById('myChart').getContext('2d');
+
 
 // (boxMargin - buttomMarginAdj) <= 10 in order to keep full boxes of actors
 let sequence_config = {
@@ -19,7 +22,7 @@ let sequence_config = {
         boxTextMargin: 5,
         // noteMargin: 10,
         messageMargin: 75,
-        actorMargin: 150,
+        actorMargin: 100,
         mirrorActors: true,
         boxMargin: 50,
         bottomMarginAdj: 50,
@@ -90,7 +93,9 @@ require('electron').ipcRenderer.on('flowchart_data', function (event, analysis_r
     document.getElementById('diagram').textContent = analysis_result['flow_sequence'];
 
     // Initialize SVG
+    console.time("Mermaid");
     mermaid.init();
+    console.timeEnd("Mermaid");
 
     // Get SVG
     svg = $('svg');
@@ -171,4 +176,47 @@ require('electron').ipcRenderer.on('flowchart_data', function (event, analysis_r
     clearAllColors.addEventListener('click', () => {
         svg.find('.xin-rect').remove();
     });
+
+    let bar_data = addon.getTraceStatistics();
+
+    let keys = Object.keys(bar_data);
+    let values = Object.values(bar_data);
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: keys,
+            datasets: [{
+                label: '# of bytes logged',
+                data: values,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
 });
+
